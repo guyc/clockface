@@ -6,8 +6,6 @@ deps:
 install:
 	env/bin/pip install -r requirements.txt
 
-run:
+clockface.pdf:	clockface.py
 	env/bin/python clockface.py
 
-test:
-	env/bin/python test.py

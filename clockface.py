@@ -4,9 +4,12 @@ import math
 width_mm = 155
 height_mm = 155
 mm_per_inch = 25.4
+points_per_mm = 72 / 25.4
 resolution = 300
 x_pixels = int(width_mm / mm_per_inch * resolution)
 y_pixels = int(height_mm / mm_per_inch * resolution)
+x_points = width_mm * points_per_mm
+y_points = height_mm * points_per_mm
 
 cx = width_mm / 2
 cy = height_mm / 2
@@ -29,7 +32,13 @@ label_size = 14
 
 # brand
 brand_size = 8
-brand_dy = 20
+brand_dy_1 = -30
+brand_dy_2 = -20
+brand_dy_3 = 25
+
+
+def mm_to_points(mm):
+    return
 
 
 def centre_text(ctx, x, y, text):
@@ -95,7 +104,7 @@ def label(ctx):
     ctx.save()
 
     ctx.set_source_rgb(0, 0, 0)
-    ctx.select_font_face("Rockwell", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+    ctx.select_font_face("Rockwell", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
     ctx.set_font_size(label_size)
 
     for hour in range(1, 13):
@@ -111,16 +120,18 @@ def brand(ctx):
     ctx.set_source_rgb(0, 0, 0)
     ctx.select_font_face("Copperplate", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
     ctx.set_font_size(brand_size)
-    centre_text(ctx, cx, cy - brand_dy, "Excel Psychology")
-    centre_text(ctx, cx, cy + brand_dy, "Spring Hill")
+    centre_text(ctx, cx, cy + brand_dy_1, "Excel")
+    centre_text(ctx, cx, cy + brand_dy_2, "Psychology")
+    centre_text(ctx, cx, cy + brand_dy_3, "Spring Hill")
     ctx.restore()
 
 
 def draw(outfile):
-    print(x_pixels, y_pixels)
-    surface = cairo.ImageSurface(cairo.Format.RGB24, x_pixels, y_pixels)
+    print(f"Writing clock face to {outfile}")
+
+    surface = cairo.PDFSurface(outfile, x_points, y_points)
     ctx = cairo.Context(surface)
-    ctx.scale(x_pixels/width_mm, y_pixels/height_mm)
+    ctx.scale(x_points/width_mm, y_points/height_mm)
 
     clear(ctx)
     hole(ctx)
@@ -129,8 +140,6 @@ def draw(outfile):
     label(ctx)
     brand(ctx)
 
-    surface.write_to_png(outfile)
-
 
 if __name__ == "__main__":
-    draw('clockface.png')
+    draw('clockface.pdf')
